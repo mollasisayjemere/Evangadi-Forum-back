@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const dbConnection=require("./db/dbConfig")
+const dbConnection = require("./db/dbConfig");
 
 const app = express();
 
@@ -8,7 +8,28 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-    ;
+app.get("/", async (req, res) => {
+  res.send("Welcome");
+});
+
+// User route middleware file
+const userRoutes = require("./routes/userRoutes");
+
+// Questions route middleware file
+const questionRoutes = require("./routes/questionRoutes");
+
+// Answers route middleware file
+const answerRoutes = require("./routes/answerRoutes");
+
+// users routes middleware
+app.use("/api/users", userRoutes);
+
+// questions routes middleware
+app.use("/api", questionRoutes);
+
+// answers routes middleware
+app.use("/api", answerRoutes);
+
 // Endpoint to create tables
 app.get("/create-table", async (req, res) => {
   // SQL query to create the Users table
@@ -56,7 +77,7 @@ app.get("/create-table", async (req, res) => {
     console.log("Error creating tables:", err.message);
     res.status(500).send("Error creating tables");
   }
-})
+});
 
 // PORT
 const PORT = 2224;

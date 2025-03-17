@@ -1,6 +1,8 @@
 const dbConnection = require("../db/dbConfig");
 const { StatusCodes } = require("http-status-codes");
 
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Register function
 const register = async (req, res) => {
@@ -52,6 +54,47 @@ const register = async (req, res) => {
   }
 };
 // Login function
+
+async function login(req, res) {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ msg: "please enter all required fields" });
+  }
+  try {
+    const [user] = await dbConnection.query(
+      "select user_name, user_id, password from userTable where email = ? ",
+      [email]
+    );
+    if (user.length == 0) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "invalid credential" });
+    }
+    // compare password
+    const isMatch = await bcrypt.compare(password, user[0].password);
+    if (!isMatch) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: "invalid credential" });
+    }
+    const user_name = user[0].user_name;
+    const user_id = user[0].user_id;
+    const token = jwt.sign({ user_name, user_id }, "secret", {
+      expiresIn: "1d",
+    });
+    return res
+      .status(StatusCodes.OK)
+      .json({ msg: "user login successful", token });
+  } catch (error) {
+    // Log and handle any errors
+    console.error("Error:", error.message);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "Something went wrong, try again later!" });
+  }
+}
 
 async function checkUser(req, res) {
   const user_name = req.user.user_name;

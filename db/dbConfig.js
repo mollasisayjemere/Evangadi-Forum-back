@@ -1,4 +1,4 @@
-const mysql2= require("mysql2")
+const mysql2 = require("mysql2");
 
 const dbConnection = mysql2.createPool({
   user: "evangadi_admin",
@@ -6,7 +6,6 @@ const dbConnection = mysql2.createPool({
   host: "localhost",
   password: "123456789",
   connectionLimit: 10,
-  socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
+  //   socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
 });
 module.exports = dbConnection.promise();
-

@@ -1,10 +1,13 @@
 const mysql2 = require("mysql2");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const dbConnection = mysql2.createPool({
-  user: "evangadi_admin",
-  database: "evangadi_forum",
+  user: process.env.USER,
+  database: process.env.DATABASE,
   host: "localhost",
-  password: "123456789",
+  password: process.env.PASSWORD,
   connectionLimit: 10,
   //   socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
 });

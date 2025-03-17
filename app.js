@@ -25,10 +25,10 @@ const answerRoutes = require("./routes/answerRoutes");
 app.use("/api/users", userRoutes);
 
 // questions routes middleware
-app.use("/api", questionRoutes);
+// app.use("/api", questionRoutes);
 
 // answers routes middleware
-app.use("/api", answerRoutes);
+// app.use("/api", answerRoutes);
 
 // Endpoint to create tables
 app.get("/create-table", async (req, res) => {

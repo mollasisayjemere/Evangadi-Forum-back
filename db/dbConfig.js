@@ -4,10 +4,10 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const dbConnection = mysql2.createPool({
-  user: process.env.USER,
-  database: process.env.DATABASE,
+  user: "evangadi_admin",
+  database: "evangadi_forum",
   host: "localhost",
-  password: process.env.PASSWORD,
+  password: "123456789",
   connectionLimit: 10,
   //   socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
 });

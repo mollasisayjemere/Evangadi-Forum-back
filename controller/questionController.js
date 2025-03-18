@@ -23,5 +23,30 @@ async function getAllQuestions(req, res) {
   }
 }
 
+// Function to get a single question by ID
+async function getQuestionById(req, res) {
+    const { question_id } = req.params; // Match the table's column name
 
-module.exports = { getAllQuestions };
+    try {
+        // Fetch the question by ID
+        const [questions] = await dbConnection.query(
+            "SELECT * FROM questionTable WHERE question_id = ?",
+            [question_id]
+        );
+
+        if (questions.length === 0) {
+            return res.status(StatusCodes.NOT_FOUND).json({ msg: "Question not found" });
+        }
+
+        return res.status(StatusCodes.OK).json({ question: questions[0] });
+
+    } catch (error) {
+        console.error("Error fetching question:", error.message);
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: "Something went wrong, try again later!" });
+    }
+}
+
+
+
+
+module.exports = { getAllQuestions,getQuestionById };

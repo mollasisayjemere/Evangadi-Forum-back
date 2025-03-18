@@ -20,12 +20,15 @@ const questionRoutes = require("./routes/questionRoutes");
 
 // Answers route middleware file
 const answerRoutes = require("./routes/answerRoutes");
+const authMiddleware = require("./middleware/authMiddleware");
 
 // users routes middleware
 app.use("/api/users", userRoutes);
 
 // questions routes middleware
-// app.use("/api", questionRoutes);
+app.use("/api", authMiddleware, questionRoutes);
+
+
 
 // answers routes middleware
 // app.use("/api", answerRoutes);

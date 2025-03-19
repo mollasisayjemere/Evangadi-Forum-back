@@ -29,7 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api", authMiddleware, questionRoutes);
 
 // answers routes middleware
-// app.use("/api", answerRoutes);
+app.use("/api", answerRoutes);
 
 // Endpoint to create tables
 app.get("/create-table", async (req, res) => {

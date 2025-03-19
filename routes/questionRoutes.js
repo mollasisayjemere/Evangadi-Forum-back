@@ -5,14 +5,15 @@ const {
   getQuestionById,
   postQuestion,
 } = require("../controller/questionController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // Route to get all questions
-router.get("/question", getAllQuestions);
+router.get("/questions", getAllQuestions);
 
 // Route to get a specific question by ID
 router.get("/:question_id", getQuestionById);
 
 // Route to post a new question
-router.post("/question", postQuestion);
+router.post("/post-question", authMiddleware, postQuestion);
 
 module.exports = router;

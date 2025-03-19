@@ -9,7 +9,10 @@ async function authMiddleware(req, res, next) {
       .json({ msg: "Authentication Invalid" });
   }
   try {
-    const { user_name, user_id } = jwt.verify(authHeader, "secret");
+    const { user_name, user_id } = jwt.verify(
+      authHeader,
+      process.env.JWT_SECRET
+    );
     req.user = { user_name, user_id };
     next();
   } catch (error) {

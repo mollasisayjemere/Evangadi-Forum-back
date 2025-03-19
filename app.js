@@ -28,8 +28,6 @@ app.use("/api/users", userRoutes);
 // questions routes middleware
 app.use("/api", authMiddleware, questionRoutes);
 
-
-
 // answers routes middleware
 // app.use("/api", answerRoutes);
 
@@ -83,7 +81,7 @@ app.get("/create-table", async (req, res) => {
 });
 
 // PORT
-const PORT = 2224;
+const PORT = 3456;
 const start = async () => {
   try {
     const result = await dbConnection.execute("select 'test' ");

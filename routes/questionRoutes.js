@@ -4,7 +4,7 @@ const {
   getAllQuestions,
   getQuestionById,
   postQuestion,
-} = require("./controller/questionController");
+} = require("../controller/questionController");
 
 // Route to get all questions
 router.get("/question", getAllQuestions);

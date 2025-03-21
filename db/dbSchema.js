@@ -10,6 +10,7 @@ const createTables = async (req, res) => {
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id)
   )`;
   // SQL query to create the Questions table
@@ -20,8 +21,9 @@ const createTables = async (req, res) => {
     title VARCHAR(70) NOT NULL,
     question_description VARCHAR(300) NOT NULL,
     tag VARCHAR(40),
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id, question_id),
-    FOREIGN KEY (user_id) REFERENCES userTable(user_id)
+    FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE
   )`;
 
   // SQL query to create the Answers table
@@ -30,6 +32,7 @@ const createTables = async (req, res) => {
     user_id INT(30) NOT NULL,
     question_id VARCHAR(120) NOT NULL,
     answer VARCHAR(300) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (answer_id),
     FOREIGN KEY (user_id) REFERENCES userTable(user_id),
     FOREIGN KEY (question_id) REFERENCES questionTable(question_id)

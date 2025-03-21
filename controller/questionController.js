@@ -7,7 +7,7 @@ async function getAllQuestions(req, res) {
   try {
     // Fetch all questions from the database
     const [questions] = await dbConnection.query(
-      "SELECT * FROM questionTable ORDER BY id DESC"
+      "SELECT * FROM questionTable ORDER BY createdAt DESC"
     );
     // If no questions found, return a 404 response
     if (questions.length === 0) {

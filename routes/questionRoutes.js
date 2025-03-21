@@ -8,10 +8,10 @@ const {
 const authMiddleware = require("../middleware/authMiddleware");
 
 // Route to get all questions
-router.get("/questions", getAllQuestions);
+router.get("/questions", authMiddleware, getAllQuestions);
 
 // Route to get a specific question by ID
-router.get("/:question_id", getQuestionById);
+router.get("/:question_id", authMiddleware, getQuestionById);
 
 // Route to post a new question
 router.post("/post-question", authMiddleware, postQuestion);

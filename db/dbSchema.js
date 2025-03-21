@@ -16,7 +16,7 @@ const createTables = async (req, res) => {
   // SQL query to create the Questions table
   let question_table = `CREATE TABLE IF NOT EXISTS questionTable (
     id INT(30) NOT NULL AUTO_INCREMENT,
-    question_id VARCHAR(120) NOT NULL UNIQUE,
+    question_id VARCHAR(120) NOT NULL,
     user_id INT(30) NOT NULL,
     title VARCHAR(70) NOT NULL,
     question_description VARCHAR(300) NOT NULL,
@@ -30,12 +30,13 @@ const createTables = async (req, res) => {
   let answer_table = `CREATE TABLE IF NOT EXISTS answerTable (
     answer_id INT(30) NOT NULL AUTO_INCREMENT,
     user_id INT(30) NOT NULL,
+    id INT(30) NOT NULL,
     question_id VARCHAR(120) NOT NULL,
     answer VARCHAR(300) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (answer_id),
-    FOREIGN KEY (user_id) REFERENCES userTable(user_id),
-    FOREIGN KEY (question_id) REFERENCES questionTable(question_id)
+    FOREIGN KEY (user_id) REFERENCES userTable(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (id, question_id) REFERENCES questionTable(id, question_id) ON DELETE CASCADE
   )`;
 
   // Execute each query and log whether the table was created successfully

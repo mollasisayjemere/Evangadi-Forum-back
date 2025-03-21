@@ -6,7 +6,6 @@ async function authMiddleware(req, res, next) {
   if (!authHeader) {
     return res.status(StatusCodes.UNAUTHORIZED).json({ msg: "Access deined." });
   }
-  console.log(authHeader);
   const token = authHeader.split(" ")[1];
   try {
     const { user_name, user_id } = jwt.verify(

@@ -41,10 +41,10 @@ async function getAnswersForQuestion(req, res) {
 
 // Function to post an answer for a specific question
 async function postAnswer(req, res) {
-  const { question_id, user_id, answer } = req.body; // Use question_id, user_id, and answer to match schema
+  const { question_id, id, user_id, answer } = req.body; // Use question_id, user_id, and answer to match schema
 
   // Validate inputs
-  if (!question_id || !user_id || !answer) {
+  if (!question_id || !id || !user_id || !answer) {
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ msg: "Please provide question_id, user_id, and answer" });
@@ -86,8 +86,8 @@ async function postAnswer(req, res) {
 
     // Insert answer into the database
     const [result] = await dbConnection.query(
-      "INSERT INTO answerTable (question_id, user_id, answer, createdAt) VALUES (?, ?, ?, NOW())",
-      [question_id, user_id, answer]
+      "INSERT INTO answerTable (id, question_id, user_id, answer, createdAt) VALUES (?, ?, ?, ?, NOW())",
+      [id, question_id, user_id, answer]
     );
 
     return res.status(StatusCodes.CREATED).json({

@@ -4,6 +4,8 @@ const {
   getAllQuestions,
   getQuestionById,
   postQuestion,
+  updateQuestion,
+  deleteQuestion,
 } = require("../controller/questionController");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -11,9 +13,15 @@ const authMiddleware = require("../middleware/authMiddleware");
 router.get("/questions/all-questions", authMiddleware, getAllQuestions);
 
 // Route to get a specific question by ID
-router.get("questions/:question_id", authMiddleware, getQuestionById);
+router.get("/questions/:question_id", authMiddleware, getQuestionById);
+
+// Route to update a specific question
+router.put("/questions/update/:question_id", authMiddleware, updateQuestion);
+
+// Route to delete a specific question by ID
+router.post("/questions/delete/:question_id", authMiddleware, deleteQuestion);
 
 // Route to post a new question
-router.post("questions/post-question", authMiddleware, postQuestion);
+router.post("/questions/post-question", authMiddleware, postQuestion);
 
 module.exports = router;

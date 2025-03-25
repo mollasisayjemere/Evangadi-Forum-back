@@ -21,7 +21,6 @@ const questionRoutes = require("./routes/questionRoutes");
 
 // Answers route middleware file
 const answerRoutes = require("./routes/answerRoutes");
-const authMiddleware = require("./middleware/authMiddleware");
 
 // users routes middleware
 app.use("/api/users", userRoutes);
@@ -41,6 +40,8 @@ const start = async () => {
   try {
     const result = await dbConnection.execute("select 'test' ");
     app.listen(PORT);
+     console.log("Database connected successfully");
+     console.log(`Listening to PORT: ${PORT}`);
   } catch (error) {
     console.log(error.message);
   }

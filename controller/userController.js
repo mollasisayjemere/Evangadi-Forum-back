@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const register = async (req, res) => {
   //   res.send("register");
   const { user_name, first_name, last_name, email, password } = req.body;
+
   if (!user_name || !first_name || !last_name || !email || !password) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -66,6 +67,7 @@ async function login(req, res) {
       "select user_name, user_id, password from userTable where email = ? ",
       [email]
     );
+    console.log(user);
     if (user.length == 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -85,7 +87,7 @@ async function login(req, res) {
     });
     return res
       .status(StatusCodes.OK)
-      .json({ msg: "user login successful", token });
+      .json({ msg: "user login successful", user_name, user_id, token });
   } catch (error) {
     // Log and handle any errors
     console.error("Error:", error.message);
@@ -95,10 +97,49 @@ async function login(req, res) {
   }
 }
 
+const forgetPassword = async function forgetPassword(req, res) {
+  const { email } = req.body;
+
+  // Check if email is provided
+  if (!email) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ msg: "An email is required" });
+  }
+
+  try {
+    // Query to check if the email exists in the database
+    const [existingUser] = await dbConnection.query(
+      "SELECT email FROM userTable WHERE email = ?",
+      [email]
+    );
+
+    // If email exists, proceed with password reset logic (e.g., sending reset link)
+    if (existingUser.length > 0) {
+      // Example of sending reset email (this part can be customized)
+      // await sendResetEmail(email);
+
+      return res.status(StatusCodes.OK).json({
+        msg: "Password reset email has been sent. Please check your inbox.",
+      });
+    }
+
+    // If the email is not found in the database
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ msg: "Email does not exist in our records" });
+  } catch (error) {
+    console.error("Error:", error.message);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "Something went wrong. Please try again later." });
+  }
+};
+
 async function checkUser(req, res) {
   const user_name = req.user.user_name;
   const user_id = req.user.user_id;
   res.status(StatusCodes.OK).json({ msg: "valid user", user_name, user_id });
 }
 
-module.exports = { register, login, checkUser };
+module.exports = { register, login, checkUser, forgetPassword };

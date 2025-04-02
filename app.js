@@ -36,12 +36,13 @@ app.get("/create-table", createTables);
 
 // PORT
 const PORT = 3456;
+// const PORT = process.env.MYSQLPORT;
 const start = async () => {
   try {
     const result = await dbConnection.execute("select 'test' ");
     app.listen(PORT);
-     console.log("Database connected successfully");
-     console.log(`Listening to PORT: ${PORT}`);
+    console.log("Database connected successfully");
+    console.log(`Listening to PORT: ${PORT}`);
   } catch (error) {
     console.log(error.message);
   }

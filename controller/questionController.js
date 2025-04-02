@@ -5,11 +5,11 @@ const { v4: uuidv4 } = require("uuid");
 // Function to post a new question
 async function postQuestion(req, res) {
   const { title, question_description, user_id, tag } = req.body;
-  
+
   if (!title || !question_description || !user_id) {
     return res
-    .status(StatusCodes.BAD_REQUEST)
-    .json({ msg: "Please provide title, description, and user_id" });
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ msg: "Please provide title, description, and user_id" });
   }
   if (title?.trim().length > 200) {
     return res
@@ -24,7 +24,7 @@ async function postQuestion(req, res) {
       "INSERT INTO questionTable (question_id, user_id, title, question_description, tag) VALUES (?, ?, ?, ?, ?)",
       [question_id, user_id, title, question_description, tag]
     );
-    
+
     return res.status(StatusCodes.CREATED).json({
       msg: "Question created successfully",
       question_id: result.insertId, // Using the generated question_id
@@ -32,8 +32,8 @@ async function postQuestion(req, res) {
   } catch (error) {
     console.error("Error posting question:", error.message);
     return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ msg: "Something went wrong, try again later!" });
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "Something went wrong, try again later!" });
   }
 }
 
@@ -71,18 +71,18 @@ async function getQuestionById(req, res) {
 
   try {
     // Fetch the question by ID
-    const [questions] = await dbConnection.query(
+    const [question] = await dbConnection.query(
       "SELECT * FROM questionTable WHERE question_id = ?",
       [question_id]
     );
 
-    if (questions.length === 0) {
+    if (question.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ msg: "Question not found" });
     }
 
-    return res.status(StatusCodes.OK).json({ question: questions[0] });
+    return res.status(StatusCodes.OK).json({ question: question[0] });
   } catch (error) {
     console.error("Error fetching question:", error.message);
     return res
@@ -94,15 +94,15 @@ async function getQuestionById(req, res) {
 // Function to delete a question
 async function deleteQuestion(req, res) {
   const { question_id } = req.params; // Question ID from URL parameter
-  const { user_id } = req.body; // User ID from request body (authenticated user)
-  console.log(user_id);
+  const { user_id } = req.user; // User ID from request body (authenticated user)
+
   try {
     // Check if the question exists
     const [question] = await dbConnection.query(
       "SELECT * FROM questionTable WHERE question_id = ?",
       [question_id]
     );
-    console.log(question);
+    console.log(question[0]);
     if (question.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -138,7 +138,8 @@ async function updateQuestion(req, res) {
   const { question_id } = req.params; // Question ID from URL parameter
   const { title, question_description, tag } = req.body; // New values and user_id (authenticated user)
   const user_id = req.user.user_id;
-  console.log(user_id);
+  // console.log(user_id);
+
   if (!title || !question_description || !user_id) {
     return res
       .status(StatusCodes.BAD_REQUEST)
@@ -151,7 +152,7 @@ async function updateQuestion(req, res) {
       "SELECT * FROM questionTable WHERE question_id = ?",
       [question_id]
     );
-    console.log(question.user_id);
+    // console.log(question.user_id);
     if (question.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)

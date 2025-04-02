@@ -4,6 +4,7 @@ const {
   postAnswer,
   deleteAnswer,
   updateAnswer,
+  getSingleAnswerById,
 } = require("../controller/answerController");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -16,11 +17,10 @@ router.get("/answers/:question_id", authMiddleware, getAnswersForQuestion);
 router.post("/answer/:question_id", authMiddleware, postAnswer);
 
 // Route to delete a specific answer posted by the user
-router.post("/answer/delete/:answer_id", authMiddleware, deleteAnswer);
+router.delete("/answer/delete/:answer_id", authMiddleware, deleteAnswer);
 
-//
-router.put("/answers/:answer_id", authMiddleware, updateAnswer);
+router.put("/answer/update/:answer_id", authMiddleware, updateAnswer);
 
-// router.delete('/answers/:answer_id', authMiddleware, )
+router.get('/answers/:answer_id', authMiddleware, getSingleAnswerById)
 
 module.exports = router;

@@ -19,7 +19,7 @@ router.get("/questions/:question_id", authMiddleware, getQuestionById);
 router.put("/questions/update/:question_id", authMiddleware, updateQuestion);
 
 // Route to delete a specific question by ID
-router.post("/questions/delete/:question_id", authMiddleware, deleteQuestion);
+router.delete("/questions/delete/:question_id", authMiddleware, deleteQuestion);
 
 // Route to post a new question
 router.post("/questions/post-question", authMiddleware, postQuestion);

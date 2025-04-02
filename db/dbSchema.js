@@ -10,6 +10,8 @@ const createTables = async (req, res) => {
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL,
+    resetToken VARCHAR(255) DEFAULT NULL,          -- New column for reset token
+  resetTokenExpire DATETIME DEFAULT NULL,  
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id)
   )`;

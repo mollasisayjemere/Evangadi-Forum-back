@@ -139,8 +139,9 @@ const updateAnswer = async (req, res) => {
 };
 
 async function deleteAnswer(req, res) {
+  console.log("Request body:", req.params);
   const { answer_id } = req.params; // Answer ID from URL parameter
-  const { user_id } = req.body; // User ID from request body (authenticated user)
+  const { user_id } = req.user; // User ID from request body (authenticated user)
 
   try {
     // Check if the answer exists
@@ -148,6 +149,7 @@ async function deleteAnswer(req, res) {
       "SELECT * FROM answerTable WHERE answer_id = ?",
       [answer_id]
     );
+    console.log(answer);
     if (answer.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -177,9 +179,78 @@ async function deleteAnswer(req, res) {
   }
 }
 
+// async function getSingleAnswerById(req, res) {
+//   const { answer_id } = req.params; // Get answer_id from the request parameters
+//   const { user_id } = req.user; // Get answer_id from the request parameters
+
+//   try {
+//     // Fetch the answer for the given answer_id
+//     const [answer] = await dbConnection.query(
+//       `SELECT
+//         answerTable.*,
+//         userTable.user_name
+//       FROM answerTable
+//       JOIN userTable ON answerTable.user_id = userTable.user_id
+//       WHERE answerTable.answer_id = ?`,
+//       [answer_id]
+//     );
+
+//     // If the answer is not found, return a 404 response
+//     if (answer.length === 0) {
+//       return res
+//         .status(StatusCodes.NOT_FOUND)
+//         .json({ msg: "Answer not found" });
+//     }
+// console.log(answer)
+//     // Return the found answer
+//     return res.status(StatusCodes.OK).json({ answer: answer[0] });
+//   } catch (error) {
+//     console.error("Error fetching answer:", error.stack);
+//     return res
+//       .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//       .json({ msg: "Something went wrong, try again later!" });
+//   }
+// }
+
+async function getSingleAnswerById(req, res) {
+  const { answer_id } = req.params; // Get answer_id from the request parameters
+  console.log("Received Answer ID from URL:", answer_id); // Log the received answer_id
+
+  try {
+    // Fetch the answer for the given answer_id
+    const answers = await dbConnection.query(
+      `SELECT 
+        answerTable.*, 
+        userTable.user_name 
+      FROM answerTable
+      JOIN userTable ON answerTable.user_id = userTable.user_id
+      WHERE answerTable.answer_id = ?`,
+      [answer_id]
+    );
+
+    console.log("Database Results:", answers); // Log the results from the database
+
+    // If no answer is found
+    if (answers.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ msg: "No answers found for this question" });
+    }
+
+    // Return the first found answer
+    return res.status(StatusCodes.OK).json({ answer: answers[0] });
+  } catch (error) {
+    console.error("Error fetching answer:", error.stack);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "Something went wrong, try again later!" });
+  }
+}
+
 module.exports = {
   getAnswersForQuestion,
   postAnswer,
   deleteAnswer,
   updateAnswer,
+  getSingleAnswerById,
 };

@@ -9,7 +9,7 @@ const dbConnection = mysql2.createPool({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
   connectionLimit: 10,
-  //   socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
+  // socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock",
 });
 console.log(process.env.DB_PASSWORD);
 

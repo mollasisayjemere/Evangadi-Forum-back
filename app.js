@@ -35,7 +35,7 @@ app.use("/api", answerRoutes);
 app.get("/create-table", createTables);
 
 // PORT
-const PORT = 3456;
+const PORT = 2031;
 // const PORT = process.env.MYSQLPORT;
 const start = async () => {
   try {

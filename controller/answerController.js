@@ -91,6 +91,53 @@ async function postAnswer(req, res) {
   }
 }
 
+// const updateAnswer = async (req, res) => {
+//   const { answer_id } = req.params;
+//   const { answer } = req.body;
+//   const { user_id } = req.user; // From the decoded JWT
+
+//   if (!answer) {
+//     return res.status(400).json({ error: "Answer content is required" });
+//   }
+
+//   try {
+//     // Check if the answer exists and belongs to the logged-in user
+//     const result = await pool.query(
+//       "SELECT * FROM answers WHERE answer_id = $1",
+//       [answer_id]
+//     );
+
+//     if (result.rows.length === 0) {
+//       return res.status(404).json({ error: "Answer not found" });
+//     }
+
+//     const answerToUpdate = result.rows[0];
+
+//     // Check if the logged-in user is the one who posted the answer
+//     if (answerToUpdate.user_id !== user_id) {
+//       return res
+//         .status(403)
+//         .json({ error: "You can only edit your own answers" });
+//     }
+
+//     // Update the answer in the database
+//     const updatedAnswer = await pool.query(
+//       "UPDATE answerTable SET answer = ?,  createdAt = NOW() WHERE answer_id = ?",
+//       [answer, answer_id]
+//     );
+
+//     res.json({
+//       message: "Answer updated successfully",
+//       answer: updatedAnswer.rows[0],
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while updating the answer" });
+//   }
+// };
+
 const updateAnswer = async (req, res) => {
   const { answer_id } = req.params;
   const { answer } = req.body;
@@ -102,16 +149,16 @@ const updateAnswer = async (req, res) => {
 
   try {
     // Check if the answer exists and belongs to the logged-in user
-    const result = await pool.query(
-      "SELECT * FROM answers WHERE answer_id = $1",
+    const [result] = await dbConnection.query(
+      "SELECT * FROM answerTable WHERE answer_id = ?",
       [answer_id]
     );
 
-    if (result.rows.length === 0) {
+    if (result.length === 0) {
       return res.status(404).json({ error: "Answer not found" });
     }
 
-    const answerToUpdate = result.rows[0];
+    const answerToUpdate = result[0];
 
     // Check if the logged-in user is the one who posted the answer
     if (answerToUpdate.user_id !== user_id) {
@@ -121,14 +168,14 @@ const updateAnswer = async (req, res) => {
     }
 
     // Update the answer in the database
-    const updatedAnswer = await pool.query(
-      "UPDATE answers SET answer = $1, updated_at = NOW() WHERE answer_id = $2 RETURNING *",
+    const [updatedAnswer] = await dbConnection.query(
+      "UPDATE answerTable SET answer = ?,  createdAt = NOW() WHERE answer_id = ?",
       [answer, answer_id]
     );
 
     res.json({
       message: "Answer updated successfully",
-      answer: updatedAnswer.rows[0],
+      answer: updatedAnswer,
     });
   } catch (err) {
     console.error(err);
@@ -212,40 +259,68 @@ async function deleteAnswer(req, res) {
 //   }
 // }
 
+// Function to get a single answer by ID
 async function getSingleAnswerById(req, res) {
-  const { answer_id } = req.params; // Get answer_id from the request parameters
-  console.log("Received Answer ID from URL:", answer_id); // Log the received answer_id
+  const { answer_id } = req.params; 
+  console.log("Received answer_id from URL:", answer_id); // DEBUGGING
 
   try {
-    // Fetch the answer for the given answer_id
-    const answers = await dbConnection.query(
-      `SELECT 
-        answerTable.*, 
-        userTable.user_name 
+    const [results] = await dbConnection.query(
+      `SELECT answerTable.*, userTable.user_name 
       FROM answerTable
       JOIN userTable ON answerTable.user_id = userTable.user_id
       WHERE answerTable.answer_id = ?`,
       [answer_id]
     );
 
-    console.log("Database Results:", answers); // Log the results from the database
+    console.log("Database query result:", results); // DEBUGGING
 
-    // If no answer is found
-    if (answers.length === 0) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ msg: "No answers found for this question" });
+    if (results.length === 0) {
+      console.log("No answer found for ID:", answer_id); // DEBUGGING
+      return res.status(404).json({ msg: "No answers found for this answer_id" });
     }
 
-    // Return the first found answer
-    return res.status(StatusCodes.OK).json({ answer: answers[0] });
+    return res.status(200).json({ answer: results[0] });
   } catch (error) {
-    console.error("Error fetching answer:", error.stack);
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ msg: "Something went wrong, try again later!" });
+    console.error("Database error:", error.stack); // DEBUGGING
+    return res.status(500).json({ msg: "Something went wrong!" });
   }
 }
+
+// async function getSingleAnswerById(req, res) {
+//   const { answer_id } = req.params; // Get answer_id from the request parameters
+//   console.log("Received Answer ID from URL:", answer_id); // Log the received answer_id
+
+//   try {
+//     // Fetch the answer for the given answer_id
+//     const answers = await dbConnection.query(
+//       `SELECT 
+//         answerTable.*, 
+//         userTable.user_name 
+//       FROM answerTable
+//       JOIN userTable ON answerTable.user_id = userTable.user_id
+//       WHERE answerTable.answer_id = ?`,
+//       [answer_id]
+//     );
+
+//     console.log("Database Results:", answers); // Log the results from the database
+
+//     // If no answer is found
+//     if (answers.length === 0) {
+//       return res
+//         .status(StatusCodes.NOT_FOUND)
+//         .json({ msg: "No answers found for this question" });
+//     }
+
+//     // Return the first found answer
+//     return res.status(StatusCodes.OK).json({ answer: answers[0] });
+//   } catch (error) {
+//     console.error("Error fetching answer:", error.stack);
+//     return res
+//       .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//       .json({ msg: "Something went wrong, try again later!" });
+//   }
+// }
 
 module.exports = {
   getAnswersForQuestion,

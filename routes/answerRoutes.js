@@ -21,6 +21,6 @@ router.delete("/answer/delete/:answer_id", authMiddleware, deleteAnswer);
 
 router.put("/answer/update/:answer_id", authMiddleware, updateAnswer);
 
-router.get('/answers/:answer_id', authMiddleware, getSingleAnswerById)
+router.get('/answer/:answer_id', authMiddleware, getSingleAnswerById)
 
 module.exports = router;

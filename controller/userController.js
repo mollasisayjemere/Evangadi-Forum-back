@@ -58,48 +58,105 @@ const register = async (req, res) => {
   }
 };
 // Login function
+// async function login(req, res) {
+//   const { email, password } = req.body;
+//   if (!email || !password) {
+//     return res
+//       .status(StatusCodes.BAD_REQUEST)
+//       .json({ msg: "please enter all required fields" });
+//   }
+//   try {
+//     const [user] = await dbConnection.query(
+//       "select user_name, user_id, password from userTable where email = ? ",
+//       [email]
+//     );
+//     console.log(user);
+//     if (user.length == 0) {
+//       return res
+//         .status(StatusCodes.BAD_REQUEST)
+//         .json({ msg: "invalid credential" });
+//     }
+//     // compare password
+//     const isMatch = await bcrypt.compare(password, user[0].password);
+//     if (!isMatch) {
+//       return res
+//         .status(StatusCodes.BAD_REQUEST)
+//         .json({ msg: "invalid credential" });
+//     }
+//     const user_name = user[0].user_name;
+//     const user_id = user[0].user_id;
+//     const token = jwt.sign({ user_name, user_id }, process.env.JWT_SECRET, {
+//       expiresIn: "1d",
+//     });
+//     return res
+//       .status(StatusCodes.OK)
+//       .json({ msg: "user login successful", token });
+//   } catch (error) {
+//     // Log and handle any errors
+//     console.error("Error:", error.message);
+//     return res
+//       .status(StatusCodes.INTERNAL_SERVER_ERROR)
+//       .json({ msg: "Something went wrong, try again later!" });
+//   }
+// }
+
+
+
+
 async function login(req, res) {
   const { email, password } = req.body;
+
+  // Validate input
   if (!email || !password) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ msg: "please enter all required fields" });
+      .json({ msg: "Please enter all required fields" });
   }
+
   try {
+    // Query to find the user by email
     const [user] = await dbConnection.query(
-      "select user_name, user_id, password from userTable where email = ? ",
+      "SELECT user_name, user_id, password FROM userTable WHERE email = ?",
       [email]
     );
-    console.log(user);
-    if (user.length == 0) {
+
+    // Log user query result
+    console.log("User query result:", user);
+
+    // Check if user exists
+    if (!user || user.length === 0) {
       return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "invalid credential" });
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ msg: "Invalid credentials" });
     }
-    // compare password
+
+    // Compare the provided password with the hashed password
     const isMatch = await bcrypt.compare(password, user[0].password);
     if (!isMatch) {
       return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "invalid credential" });
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ msg: "Invalid credentials" });
     }
-    const user_name = user[0].user_name;
-    const user_id = user[0].user_id;
+
+    // Generate JWT token
+    const { user_name, user_id } = user[0]; // Destructure user object
     const token = jwt.sign({ user_name, user_id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
+
+    // Respond with success message and token
+    console.log("Login successful for user:", user_name);
     return res
       .status(StatusCodes.OK)
-      .json({ msg: "user login successful", token });
+      .json({ msg: "User login successful", token });
   } catch (error) {
     // Log and handle any errors
-    console.error("Error:", error.message);
+    console.error("Login Error:", error); // Log the entire error object for better debugging
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ msg: "Something went wrong, try again later!" });
+      .json({ msg: "Something went wrong, please try again later!" });
   }
 }
-
 // const forgetPassword = async function forgetPassword(req, res) {
 //   const { email } = req.body;
 
